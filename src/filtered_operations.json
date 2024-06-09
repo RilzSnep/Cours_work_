@@ -1,0 +1,53 @@
+[
+    {
+        "date_operation": "31.05.2024 12:06:07",
+        "data_payment": "31.05.2024",
+        "card_number": "*1672",
+        "status": "OK",
+        "transaction_amount": -106.97,
+        "currency_operation": "RUB",
+        "payment_amount ": -106.97,
+        "payment_currency": "RUB",
+        "cashback": 1.0,
+        "category": "Супермаркеты",
+        "MCC": 5411.0,
+        "description": "Магнит",
+        "bonuses_including_cashback": 1,
+        "rounding_investment_bank": 0,
+        "amount_rounding_operation": 106.97
+    },
+    {
+        "date_operation": "14.05.2024 12:39:34",
+        "data_payment": "14.05.2024",
+        "card_number": "*1672",
+        "status": "OK",
+        "transaction_amount": -59.99,
+        "currency_operation": "RUB",
+        "payment_amount ": -59.99,
+        "payment_currency": "RUB",
+        "cashback": NaN,
+        "category": "Супермаркеты",
+        "MCC": 5411.0,
+        "description": "Магнит",
+        "bonuses_including_cashback": 0,
+        "rounding_investment_bank": 0,
+        "amount_rounding_operation": 59.99
+    },
+    {
+        "date_operation": "11.05.2024 12:28:41",
+        "data_payment": "11.05.2024",
+        "card_number": "*1672",
+        "status": "OK",
+        "transaction_amount": -349.97,
+        "currency_operation": "RUB",
+        "payment_amount ": -349.97,
+        "payment_currency": "RUB",
+        "cashback": 3.0,
+        "category": "Супермаркеты",
+        "MCC": 5411.0,
+        "description": "Магнит",
+        "bonuses_including_cashback": 3,
+        "rounding_investment_bank": 0,
+        "amount_rounding_operation": 349.97
+    }
+]
