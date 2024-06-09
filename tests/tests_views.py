@@ -9,7 +9,8 @@ from src.views import (
     get_stock_currency,
     process_card_data,
     read_transactions_xlsx
-) #top_transactions
+)
+# top_transactions
 
 
 # Заглушки для внешних зависимостей
