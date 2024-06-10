@@ -17,7 +17,7 @@ operations = read_transactions_xlsx("../data/operations_mi.xls")
 search_string = "Магнит"
 
 
-def search_transactions(operations_1: list[dict[str, Any]], search_string_1: str) -> list[dict[str, Any]]:
+def search_transactions(operations_1: Any, search_string_1: Any) -> list[dict[str, Any]]:
     """
     Фильтрация списка словарей, проверяя наличие строки поиска в описании.
 

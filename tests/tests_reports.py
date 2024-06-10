@@ -18,7 +18,7 @@ class TestMyFunctions(unittest.TestCase):
     def test_search_transactions(self) -> None:
         # Test if read_transactions_xlsx returns a list of dictionaries
         file_path = "test_file.xlsx"  # Provide a test file path
-        transactions = search_transactions(file_path)
+        transactions = search_transactions(file_path, "")
         self.assertIsInstance(transactions, list)
         for transaction in transactions:
             self.assertIsInstance(transaction, dict)

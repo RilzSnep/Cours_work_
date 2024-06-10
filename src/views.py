@@ -1,7 +1,7 @@
 import json
 import os
 from datetime import datetime
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List
 
 import pandas as pd
 import requests
@@ -37,7 +37,7 @@ def calculate_total_expenses(transactions: List[Dict[str, Any]]) -> int:
     return total_expenses
 
 
-def read_transactions_xlsx(file_path: str) -> List[Dict[str, Any]]:
+def read_transactions_xlsx(file_path: str) -> Any:
     """
     Эта функция читает данные о транзакциях из файла Excel
     """
@@ -48,9 +48,9 @@ def read_transactions_xlsx(file_path: str) -> List[Dict[str, Any]]:
 reader = read_transactions_xlsx("../data/operations_mi.xls")
 
 
-def process_card_data(operations_1: List[Dict[str, Any]]) -> List[Dict[str, Union[str, int, float]]]:
+def process_card_data(operations_1: List[Dict[str, Any]]) -> Any:
     """
-     Эта функция обрабатывает данные о картах из списка транзакций
+    Эта функция обрабатывает данные о картах из списка транзакций
     """
     card_data = {}
     for operation in operations_1:
@@ -60,11 +60,11 @@ def process_card_data(operations_1: List[Dict[str, Any]]) -> List[Dict[str, Unio
                 card_data[last_digits] = {"last_digits": last_digits, "total_spent": 0, "cashback": 0}
             if operation["transaction_amount"] < 0:
                 card_data[last_digits]["total_spent"] -= round(operation["transaction_amount"], 1)
-            card_data[last_digits]["cashback"] += float(operation.get("bonuses_including_cashback", 0))
+            card_data[last_digits]["cashback"] += operation.get("bonuses_including_cashback", 0)
     return list(card_data.values())
 
 
-def top_transactions(reader: List[Dict[str, Any]]) -> Union[List[Dict[str, Any]], None]:
+def top_transactions(reader: List[Dict[str, Any]]) -> Any:
     """
     Функция возвращает список из пяти самых дорогих транзакций
     """
@@ -100,7 +100,7 @@ rate_2 = []
 
 def get_currency_rate(currency: str) -> Any:
     """
-     Эта функция получает курс валюты по отношению к рублю с использованием API
+    Эта функция получает курс валюты по отношению к рублю с использованием API
     """
     url = f"https://api.apilayer.com/exchangerates_data/latest?symbols=RUB&base={currency}"
     headers = {"apikey": "zreg2uCOFNUBn4Or2wvNJ1VlpSF22ByN"}
@@ -112,7 +112,7 @@ def get_currency_rate(currency: str) -> Any:
 
 def get_stock_currency(stock: str) -> Any:
     """
-     Функция получает текущую цену акции с помощью Yahoo Finance
+    Функция получает текущую цену акции с помощью Yahoo Finance
     """
     data = yf.Ticker(stock)
     todays = pd.DataFrame(data.history(period="1d"))
@@ -148,7 +148,7 @@ output_data = {
 
 output_file = "operations_data.json"
 """
-лткрытие файла для записей и сразу записывает 
+лткрытие файла для записей и сразу записывает
 """
 with open(output_file, "w", encoding="utf-8") as f:
     json.dump(output_data, f, indent=4, ensure_ascii=False)
