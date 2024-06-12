@@ -1,6 +1,6 @@
 import unittest
 
-from src.reports import search_transactions
+from src.reports import simple_search
 
 
 class TestMyFunctions(unittest.TestCase):
@@ -18,14 +18,14 @@ class TestMyFunctions(unittest.TestCase):
     def test_search_transactions(self) -> None:
         # Test if read_transactions_xlsx returns a list of dictionaries
         file_path = "test_file.xlsx"  # Provide a test file path
-        transactions = search_transactions(file_path, "")
+        transactions = simple_search(file_path, "")
         self.assertIsInstance(transactions, list)
         for transaction in transactions:
             self.assertIsInstance(transaction, dict)
 
     def test_search_other_transactions(self) -> None:
         # Test if search_transactions filters transactions correctly
-        filtered_operations = search_transactions(self.operations, self.search_string)
+        filtered_operations = simple_search(self.operations, self.search_string)
         self.assertEqual(len(filtered_operations), 2)  # Expecting 2 transactions containing "Магнит"
 
         # Check if filtered operations contain transactions with the search string
