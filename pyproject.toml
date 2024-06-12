@@ -2,7 +2,7 @@
 name = "pythonproject5"
 version = "0.1.0"
 description = ""
-authors = ["Natalia Yaiceedka"]
+authors = ["Zifirka"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
