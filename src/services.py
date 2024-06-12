@@ -1,6 +1,14 @@
 import json
-
+import logging
 import pandas as pd
+
+# Настройка логирования
+logging.basicConfig(
+    level=logging.INFO,  # Уровень логирования (INFO, DEBUG, WARNING, ERROR, CRITICAL)
+    format="%(asctime)s - %(levelname)s - %(filename)s:%(lineno)d - %(message)s",
+    filename="finance_log.txt",  # Файл для записи логов
+    filemode="w",  # Режим записи в файл (w - перезапись, a - добавление)
+)
 
 
 def get_transactions_by_keyword(search_term_2: str) -> str:
@@ -13,6 +21,7 @@ def get_transactions_by_keyword(search_term_2: str) -> str:
     Returns:
         JSON-строка с результатами поиска.
     """
+    logging.info(f"Поиск транзакций по ключевому слову: {search_term_2}")
     try:
         file_path = "../data/operations_mi.xls"
         data = pd.read_excel(file_path)
@@ -37,15 +46,57 @@ def get_transactions_by_keyword(search_term_2: str) -> str:
         with open("transactions_search_result.json", "w", encoding="utf-8") as f:
             json.dump(transaction_list, f, indent=4, ensure_ascii=False)
 
+        logging.info("Результаты поиска записаны в файл transactions_search_result.json")
         return json_response
 
     except FileNotFoundError:
+        logging.error("Файл operations.xls не найден.")
         return json.dumps({"error": "Файл operations.xls не найден."}, indent=4, ensure_ascii=False)
     except Exception as e:
+        logging.error(f"Произошла ошибка: {str(e)}")
         return json.dumps({"error": f"Произошла ошибка: {str(e)}"}, indent=4, ensure_ascii=False)
+
+
+def get_expenses_by_category(transactions: pd.DataFrame, category: str, report_date: pd.Timestamp) -> str:
+    """
+    Вычисляет траты по категории за последние 3 месяца от указанной даты.
+
+    Args:
+        transactions: DataFrame с транзакциями.
+        category: Категория для расчета.
+        report_date: Дата, от которой отсчитывать 3 месяца.
+
+    Returns:
+        JSON-строка с результатами расчета.
+    """
+    logging.info(f"Расчет трат по категории: {category} за период с "
+                 f"{report_date - pd.DateOffset(months=3)} по {report_date}")
+    # Извлекаем нужные данные
+    filtered_transactions = transactions[
+        (transactions["category"] == category)
+        & (transactions["date"] >= report_date - pd.DateOffset(months=3))
+        & (transactions["date"] <= report_date)
+    ]
+
+    total_expenses = filtered_transactions["amount"].sum()
+
+    result = json.dumps(
+        {"category": category, "total_expenses": total_expenses, "report_date": report_date.strftime("%Y-%m-%d")},
+        indent=4,
+        ensure_ascii=False,
+    )
+    logging.info(f"Результаты расчета: {result}")
+    return result
 
 
 # Пример использования:
 search_term_1 = "кафе"
 json_result = get_transactions_by_keyword(search_term_1)
 print(json_result)
+
+# Пример использования функции get_expenses_by_category
+transactions_df = pd.read_excel("../data/operations_mi.xls")
+category_to_check = "Еда"
+report_date_to_check = pd.Timestamp("2024-03-15")
+json_expenses_result = get_expenses_by_category(transactions_df, category_to_check, report_date_to_check)
+print(json_expenses_result)
