@@ -1,10 +1,9 @@
 import json
 import logging
 import re
-from typing import  Dict, List
+from typing import Dict, List
 
 import pandas as pd
-
 
 logging.basicConfig(
     level=logging.INFO,  # Уровень логирования (INFO, DEBUG, WARNING, ERROR, CRITICAL)
@@ -47,13 +46,17 @@ def simple_search(transactions: List[Dict], search_string: str) -> List[Dict]:
     ]
 
 
-operations = read_transactions_xlsx("../data/operations_mi.xls")
-search_string = "Магнит"
-filtered_operations = simple_search(operations, search_string)
+def main_reports():
+    operations = read_transactions_xlsx("data/operations_mi.xls")
+    search_string = input()
+    filtered_operations = simple_search(operations, search_string)
+
+    with open("filtered_operations.json", "w", encoding="utf-8") as f:
+        json.dump(filtered_operations, f, indent=4, ensure_ascii=False)  # indent для красивого формата
+
+    logging.info(f"Отфильтрованные операции записаны в файл filtered_operations.json")
+    print("Отфильтрованные операции записаны в файл filtered_operations.json")
 
 
-with open("filtered_operations.json", "w", encoding="utf-8") as f:
-    json.dump(filtered_operations, f, indent=4, ensure_ascii=False)  # indent для красивого формата
-
-logging.info(f"Отфильтрованные операции записаны в файл filtered_operations.json")
-print("Отфильтрованные операции записаны в файл filtered_operations.json")
+if __name__ == "__main__":
+    main_reports()

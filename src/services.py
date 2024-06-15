@@ -26,6 +26,10 @@ def get_transactions_by_keyword(search_term_2: str) -> str:
         file_path = "../data/operations_mi.xls"
         data = pd.read_excel(file_path)
 
+        # Преобразование столбца 'description' и 'category' в строки
+        data['description'] = data['description'].astype(str)
+        data['category'] = data['category'].astype(str)
+
         # Фильтруем данные
         filtered_data = data[
             data["description"].str.contains(search_term_2, case=False)
@@ -71,32 +75,40 @@ def get_expenses_by_category(transactions: pd.DataFrame, category: str, report_d
     """
     logging.info(f"Расчет трат по категории: {category} за период с "
                  f"{report_date - pd.DateOffset(months=3)} по {report_date}")
+    # Преобразование столбца 'data_payment' в datetime с правильным форматом
+    transactions['data_payment'] = pd.to_datetime(transactions['data_payment'], format="%d.%m.%Y")
+
     # Извлекаем нужные данные
     filtered_transactions = transactions[
         (transactions["category"] == category)
-        & (transactions["date"] >= report_date - pd.DateOffset(months=3))
-        & (transactions["date"] <= report_date)
+        & (transactions["data_payment"] >= report_date - pd.DateOffset(months=3))
+        & (transactions["data_payment"] <= report_date)
     ]
 
-    total_expenses = filtered_transactions["amount"].sum()
+    total_expenses = filtered_transactions["payment_amount"].sum()
 
     result = json.dumps(
         {"category": category, "total_expenses": total_expenses, "report_date": report_date.strftime("%Y-%m-%d")},
         indent=4,
-        ensure_ascii=False,
+        ensure_ascii=False
     )
     logging.info(f"Результаты расчета: {result}")
     return result
 
 
-# Пример использования:
-search_term_1 = "кафе"
-json_result = get_transactions_by_keyword(search_term_1)
-print(json_result)
+def main_services():
+    # Пример использования:
+    search_term_1 = "кафе"
+    json_result = get_transactions_by_keyword(search_term_1)
+    print(json_result)
 
-# Пример использования функции get_expenses_by_category
-transactions_df = pd.read_excel("../data/operations_mi.xls")
-category_to_check = "Еда"
-report_date_to_check = pd.Timestamp("2024-03-15")
-json_expenses_result = get_expenses_by_category(transactions_df, category_to_check, report_date_to_check)
-print(json_expenses_result)
+    # Пример использования функции get_expenses_by_category
+    transactions_df = pd.read_excel("../data/operations_mi.xls")
+    category_to_check = "Еда"
+    report_date_to_check = pd.Timestamp("2024-03-15")
+    json_expenses_result = get_expenses_by_category(transactions_df, category_to_check, report_date_to_check)
+    print(json_expenses_result)
+
+
+if __name__ == "__main__":
+    main_services()
