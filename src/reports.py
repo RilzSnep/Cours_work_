@@ -1,7 +1,7 @@
 import json
 import logging
 import re
-from typing import Dict, List
+from typing import Any, Dict, List
 
 import pandas as pd
 
@@ -27,7 +27,7 @@ def read_transactions_xlsx(file_path: str) -> List[Dict]:
 
 
 # Функция для простого поиска
-def simple_search(transactions: List[Dict], search_string: str) -> List[Dict]:
+def simple_search(transactions: Any, search_string: str) -> List[Dict]:
     """
     Простой поиск транзакций по описанию.
 
@@ -46,15 +46,15 @@ def simple_search(transactions: List[Dict], search_string: str) -> List[Dict]:
     ]
 
 
-def main_reports():
-    operations = read_transactions_xlsx("data/operations_mi.xls")
+def main_reports() -> None:
+    operations = read_transactions_xlsx("../data/operations_mi.xls")
     search_string = input()
     filtered_operations = simple_search(operations, search_string)
 
     with open("filtered_operations.json", "w", encoding="utf-8") as f:
         json.dump(filtered_operations, f, indent=4, ensure_ascii=False)  # indent для красивого формата
 
-    logging.info(f"Отфильтрованные операции записаны в файл filtered_operations.json")
+    logging.info("Отфильтрованные операции записаны в файл filtered_operations.json")
     print("Отфильтрованные операции записаны в файл filtered_operations.json")
 
 

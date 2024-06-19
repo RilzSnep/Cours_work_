@@ -6,12 +6,13 @@ from typing import Any, Dict, List
 import pandas as pd
 import requests
 import yfinance as yf
-
+from dotenv import load_dotenv, dotenv_values
+load_dotenv()
 # Получение API ключа из переменных окружения
 API_KEY = os.getenv("api_key")
 
 
-def get_greeting(date_time_str: str = None) -> str:
+def get_greeting(date_time_str: str | None) -> str:
     """
     Функция принимает строку с датой и временем (необязательно)
     и возвращает приветствие в зависимости от времени суток.
@@ -42,7 +43,7 @@ def calculate_total_expenses(transactions: List[Dict[str, Any]]) -> float:
     return total_expenses * -1
 
 
-def read_transactions_xlsx(file_path: str) -> List[Dict[str, Any]]:
+def read_transactions_xlsx(file_path: str) -> Any:
     """
     Эта функция читает данные о транзакциях из файла Excel.
     """
@@ -74,18 +75,17 @@ def top_transactions(transactions: List[Dict[str, Any]]) -> List[Dict[str, Any]]
     return transactions[:5]
 
 
-def get_currency_rate(currency: str) -> float:
+def get_currency_rate(currency: str) -> Any:
     """
     Эта функция получает курс валюты по отношению к рублю с использованием API.
     """
     url = f"https://api.apilayer.com/exchangerates_data/latest?symbols=RUB&base={currency}"
-    headers = {"apikey": "7IqGK7FSZjIZJcZKHvQlrNq0cTKBnm6Q"}
-    response = requests.get(url, headers=headers, timeout=40)
+    response = requests.get(url, headers={"apikey": API_KEY}, timeout=40)
     response_data = json.loads(response.text)
     return response_data["rates"]["RUB"]
 
 
-def get_stock_currency(stock: str) -> float:
+def get_stock_currency(stock: str) -> Any:
     """
     Функция получает текущую цену акции с помощью Yahoo Finance.
     """
@@ -99,12 +99,13 @@ def main_views() -> None:
     Главная функция программы, запускающая обработку транзакций.
     """
     # Запрос у пользователя даты и времени
-    user_input = input("Введите дату и время в формате YYYY-MM-DD HH:MM:SS "
-                       "или нажмите Enter для использования текущего времени: ")
+    user_input = input(
+        "Введите дату и время в формате YYYY-MM-DD HH:MM:SS " "или нажмите Enter для использования текущего времени: "
+    )
     greeting = get_greeting(user_input if user_input else None)
     print(greeting)
 
-    transactions = read_transactions_xlsx("data/operations_mi.xls")
+    transactions = read_transactions_xlsx("../data/operations_mi.xls")
     total_expenses = calculate_total_expenses(transactions)
     print(f"Total expenses: {total_expenses}")
 
@@ -116,7 +117,7 @@ def main_views() -> None:
 
     currency_rates = [
         {"currency": "USD", "rate": get_currency_rate("USD")},
-        {"currency": "EUR", "rate": get_currency_rate("EUR")}
+        {"currency": "EUR", "rate": get_currency_rate("EUR")},
     ]
     print(f"Currency rates: {currency_rates}")
 
@@ -125,7 +126,7 @@ def main_views() -> None:
         {"stock": "AMZN", "price": get_stock_currency("AMZN")},
         {"stock": "GOOGL", "price": get_stock_currency("GOOGL")},
         {"stock": "MSFT", "price": get_stock_currency("MSFT")},
-        {"stock": "TSLA", "price": get_stock_currency("TSLA")}
+        {"stock": "TSLA", "price": get_stock_currency("TSLA")},
     ]
     print(f"Stock prices: {stock_prices}")
 
@@ -135,7 +136,7 @@ def main_views() -> None:
         "card_data": card_data,
         "top_transactions": top_trans,
         "currency_rates": currency_rates,
-        "stock_prices": stock_prices
+        "stock_prices": stock_prices,
     }
 
     output_file = "operations_data.json"

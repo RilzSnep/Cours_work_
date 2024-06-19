@@ -1,13 +1,13 @@
-from src.views import main_views
 from src.reports import main_reports
-from src.services import main_servies
+from src.services import main_services
+from src.views import main_views
 
 
 def main() -> None:
-    """ вызов всех функций """
+    """вызов всех функций"""
     main_views()
     main_reports()
-    main_servies()
+    main_services()
 
 
 if __name__ == "__main__":

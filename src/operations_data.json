@@ -1,6 +1,6 @@
 {
-    "greeting": "Доброе утро!",
-    "total_expenses": -2183.78,
+    "greeting": "Добрый день!",
+    "total_expenses": 2183.78,
     "card_data": [
         {
             "last_digits": "1672",
@@ -16,7 +16,7 @@
             "status": "OK",
             "transaction_amount": 500.0,
             "currency_operation": "RUB",
-            "payment_amount ": 500.0,
+            "payment_amount": 500.0,
             "payment_currency": "RUB",
             "cashback": NaN,
             "category": "Бонусы",
@@ -33,7 +33,7 @@
             "status": "OK",
             "transaction_amount": 500.0,
             "currency_operation": "RUB",
-            "payment_amount ": 500.0,
+            "payment_amount": 500.0,
             "payment_currency": "RUB",
             "cashback": NaN,
             "category": "Переводы",
@@ -50,7 +50,7 @@
             "status": "OK",
             "transaction_amount": 350.0,
             "currency_operation": "RUB",
-            "payment_amount ": 350.0,
+            "payment_amount": 350.0,
             "payment_currency": "RUB",
             "cashback": NaN,
             "category": "Переводы",
@@ -67,7 +67,7 @@
             "status": "OK",
             "transaction_amount": 150.0,
             "currency_operation": "RUB",
-            "payment_amount ": 150.0,
+            "payment_amount": 150.0,
             "payment_currency": "RUB",
             "cashback": NaN,
             "category": "Переводы",
@@ -84,7 +84,7 @@
             "status": "OK",
             "transaction_amount": 150.0,
             "currency_operation": "RUB",
-            "payment_amount ": 150.0,
+            "payment_amount": 150.0,
             "payment_currency": "RUB",
             "cashback": NaN,
             "category": "Переводы",
@@ -98,33 +98,33 @@
     "currency_rates": [
         {
             "currency": "USD",
-            "rate": 89.196264
+            "rate": 87.302806
         },
         {
             "currency": "EUR",
-            "rate": 95.35929
+            "rate": 93.561092
         }
     ],
     "stock_prices": [
         {
             "stock": "AAPL",
-            "price": 216.75
+            "price": 218.9499969482422
         },
         {
             "stock": "AMZN",
-            "price": 187.6699981689453
+            "price": 185.0
         },
         {
             "stock": "GOOGL",
-            "price": 176.74000549316406
+            "price": 178.36000061035156
         },
         {
             "stock": "MSFT",
-            "price": 443.3900146484375
+            "price": 450.94000244140625
         },
         {
             "stock": "TSLA",
-            "price": 191.0800018310547
+            "price": 188.80999755859375
         }
     ]
 }

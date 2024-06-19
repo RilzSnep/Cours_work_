@@ -1,5 +1,6 @@
 import json
 import logging
+
 import pandas as pd
 
 # Настройка логирования
@@ -27,8 +28,8 @@ def get_transactions_by_keyword(search_term_2: str) -> str:
         data = pd.read_excel(file_path)
 
         # Преобразование столбца 'description' и 'category' в строки
-        data['description'] = data['description'].astype(str)
-        data['category'] = data['category'].astype(str)
+        data["description"] = data["description"].astype(str)
+        data["category"] = data["category"].astype(str)
 
         # Фильтруем данные
         filtered_data = data[
@@ -73,10 +74,11 @@ def get_expenses_by_category(transactions: pd.DataFrame, category: str, report_d
     Returns:
         JSON-строка с результатами расчета.
     """
-    logging.info(f"Расчет трат по категории: {category} за период с "
-                 f"{report_date - pd.DateOffset(months=3)} по {report_date}")
+    logging.info(
+        f"Расчет трат по категории: {category} за период с" f"{report_date - pd.DateOffset(months=3)} по {report_date}"
+    )
     # Преобразование столбца 'data_payment' в datetime с правильным форматом
-    transactions['data_payment'] = pd.to_datetime(transactions['data_payment'], format="%d.%m.%Y")
+    transactions["data_payment"] = pd.to_datetime(transactions["data_payment"], format="%d.%m.%Y")
 
     # Извлекаем нужные данные
     filtered_transactions = transactions[
@@ -90,13 +92,13 @@ def get_expenses_by_category(transactions: pd.DataFrame, category: str, report_d
     result = json.dumps(
         {"category": category, "total_expenses": total_expenses, "report_date": report_date.strftime("%Y-%m-%d")},
         indent=4,
-        ensure_ascii=False
+        ensure_ascii=False,
     )
     logging.info(f"Результаты расчета: {result}")
     return result
 
 
-def main_services():
+def main_services() -> None:
     # Пример использования:
     search_term_1 = "кафе"
     json_result = get_transactions_by_keyword(search_term_1)

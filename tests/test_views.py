@@ -47,10 +47,10 @@ class TestFunctions(unittest.TestCase):
 
     def test_get_greeting(self) -> None:
         """Проверяет работу функции get_greeting для разных времен."""
-        self.assertEqual(get_greeting("2022-04-01 12:00:00"), "Добрый день")
-        self.assertEqual(get_greeting("2022-04-01 06:00:00"), "Доброе утро")
-        self.assertEqual(get_greeting("2022-04-01 18:00:00"), "Добрый вечер")
-        self.assertEqual(get_greeting("2022-04-01 00:00:00"), "Доброй ночи")
+        self.assertEqual(get_greeting("2022-04-01 12:00:00"), "Добрый день!")
+        self.assertEqual(get_greeting("2022-04-01 06:00:00"), "Доброе утро!")
+        self.assertEqual(get_greeting("2022-04-01 18:00:00"), "Добрый вечер!")
+        self.assertEqual(get_greeting("2022-04-01 00:00:00"), "Доброй ночи!")
 
     @patch("yfinance.Ticker")
     def test_get_stock_currency(self, mock_ticker: Any) -> None:
@@ -63,12 +63,12 @@ class TestFunctions(unittest.TestCase):
     def test_calculate_total_expenses(self) -> None:
         """Проверяет работу функции calculate_total_expenses."""
         transactions = [{"transaction_amount": -100}, {"transaction_amount": -200}]
-        self.assertEqual(calculate_total_expenses(transactions), -300)
+        self.assertEqual(calculate_total_expenses(transactions), 300.0)
 
     def test_read_transactions_xlsx(self) -> None:
         """Проверяет работу функции read_transactions_xlsx."""
         with patch("pandas.read_excel", return_value=pd.DataFrame({})):
-            self.assertIsNone(read_transactions_xlsx("non_existent_file.xls"))
+            self.assertEqual(read_transactions_xlsx("non_existent_file.xls"), [])
 
     def test_empty_operations(self) -> None:
         """Проверяет работу функции process_card_data с пустым списком операций."""
