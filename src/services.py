@@ -1,15 +1,10 @@
 import json
-import logging
 
 import pandas as pd
 
-# Настройка логирования
-logging.basicConfig(
-    level=logging.INFO,  # Уровень логирования (INFO, DEBUG, WARNING, ERROR, CRITICAL)
-    format="%(asctime)s - %(levelname)s - %(filename)s:%(lineno)d - %(message)s",
-    filename="finance_log.txt",  # Файл для записи логов
-    filemode="w",  # Режим записи в файл (w - перезапись, a - добавление)
-)
+from src.utils import ligging_setup
+
+logger = ligging_setup()
 
 
 def get_transactions_by_keyword(search_term_2: str) -> str:
@@ -22,7 +17,7 @@ def get_transactions_by_keyword(search_term_2: str) -> str:
     Returns:
         JSON-строка с результатами поиска.
     """
-    logging.info(f"Поиск транзакций по ключевому слову: {search_term_2}")
+    logger.info(f"Поиск транзакций по ключевому слову: {search_term_2}")
     try:
         file_path = "../data/operations_mi.xls"
         data = pd.read_excel(file_path)
@@ -51,14 +46,14 @@ def get_transactions_by_keyword(search_term_2: str) -> str:
         with open("transactions_search_result.json", "w", encoding="utf-8") as f:
             json.dump(transaction_list, f, indent=4, ensure_ascii=False)
 
-        logging.info("Результаты поиска записаны в файл transactions_search_result.json")
+        logger.info("Результаты поиска записаны в файл transactions_search_result.json")
         return json_response
 
     except FileNotFoundError:
-        logging.error("Файл operations.xls не найден.")
+        logger.error("Файл operations.xls не найден.")
         return json.dumps({"error": "Файл operations.xls не найден."}, indent=4, ensure_ascii=False)
     except Exception as e:
-        logging.error(f"Произошла ошибка: {str(e)}")
+        logger.error(f"Произошла ошибка: {str(e)}")
         return json.dumps({"error": f"Произошла ошибка: {str(e)}"}, indent=4, ensure_ascii=False)
 
 
@@ -74,7 +69,7 @@ def get_expenses_by_category(transactions: pd.DataFrame, category: str, report_d
     Returns:
         JSON-строка с результатами расчета.
     """
-    logging.info(
+    logger.info(
         f"Расчет трат по категории: {category} за период с" f"{report_date - pd.DateOffset(months=3)} по {report_date}"
     )
     # Преобразование столбца 'data_payment' в datetime с правильным форматом
@@ -94,7 +89,7 @@ def get_expenses_by_category(transactions: pd.DataFrame, category: str, report_d
         indent=4,
         ensure_ascii=False,
     )
-    logging.info(f"Результаты расчета: {result}")
+    logger.info(f"Результаты расчета: {result}")
     return result
 
 

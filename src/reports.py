@@ -5,12 +5,9 @@ from typing import Any, Dict, List
 
 import pandas as pd
 
-logging.basicConfig(
-    level=logging.INFO,  # Уровень логирования (INFO, DEBUG, WARNING, ERROR, CRITICAL)
-    format="%(asctime)s - %(levelname)s - %(filename)s:%(lineno)d - %(message)s",
-    filename="search_log.txt",  # Файл для записи логов
-    filemode="w",  # Режим записи в файл (w - перезапись, a - добавление)
-)
+from src.utils import ligging_setup
+
+logger = ligging_setup()
 
 
 def read_transactions_xlsx(file_path: str) -> List[Dict]:
@@ -22,7 +19,7 @@ def read_transactions_xlsx(file_path: str) -> List[Dict]:
         opera_1 = pd.read_excel(file_path)  # Читаем файл Excel с помощью Pandas
         return opera_1.to_dict("records")  # Преобразуем DataFrame в список словарей
     except FileNotFoundError:
-        logging.error(f"Файл {file_path} не найден")
+        logger.error(f"Файл {file_path} не найден")
         return []
 
 
@@ -38,7 +35,7 @@ def simple_search(transactions: Any, search_string: str) -> List[Dict]:
     Returns:
         Список словарей с транзакциями, соответствующими запросу.
     """
-    logging.info(f"Поиск транзакций по строке '{search_string}'")
+    logger.info(f"Поиск транзакций по строке '{search_string}'")
     return [
         transaction
         for transaction in transactions
@@ -47,6 +44,11 @@ def simple_search(transactions: Any, search_string: str) -> List[Dict]:
 
 
 def main_reports() -> None:
+    """
+    Главная функция модуля, объединяющая все функции в 1
+
+    :return: None
+    """
     operations = read_transactions_xlsx("../data/operations_mi.xls")
     search_string = input()
     filtered_operations = simple_search(operations, search_string)
@@ -54,7 +56,7 @@ def main_reports() -> None:
     with open("filtered_operations.json", "w", encoding="utf-8") as f:
         json.dump(filtered_operations, f, indent=4, ensure_ascii=False)  # indent для красивого формата
 
-    logging.info("Отфильтрованные операции записаны в файл filtered_operations.json")
+    logger.info("Отфильтрованные операции записаны в файл filtered_operations.json")
     print("Отфильтрованные операции записаны в файл filtered_operations.json")
 
 

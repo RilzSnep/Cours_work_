@@ -3,10 +3,12 @@ import os
 from datetime import datetime
 from typing import Any, Dict, List
 
-import pandas as pd
 import requests
 import yfinance as yf
-from dotenv import load_dotenv, dotenv_values
+from dotenv import load_dotenv
+
+from src.utils import read_transactions_xlsx
+
 load_dotenv()
 # Получение API ключа из переменных окружения
 API_KEY = os.getenv("api_key")
@@ -41,14 +43,6 @@ def calculate_total_expenses(transactions: List[Dict[str, Any]]) -> float:
         if transaction["transaction_amount"] < 0:
             total_expenses += transaction["transaction_amount"]
     return total_expenses * -1
-
-
-def read_transactions_xlsx(file_path: str) -> Any:
-    """
-    Эта функция читает данные о транзакциях из файла Excel.
-    """
-    transactions_df = pd.read_excel(file_path)
-    return transactions_df.to_dict("records")
 
 
 def process_card_data(operations: List[Dict[str, Any]]) -> List[Dict[str, Any]]:

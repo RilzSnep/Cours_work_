@@ -3,6 +3,7 @@ from typing import Any
 from unittest.mock import Mock, patch
 
 import pandas as pd
+from pytest import mark
 
 from src.views import (
     calculate_total_expenses,
@@ -45,12 +46,17 @@ class TestFunctions(unittest.TestCase):
         """Настройка перед каждым тестом."""
         pass
 
-    def test_get_greeting(self) -> None:
+    @pytest.mark.parametrize(
+        "inp, outp", [
+            ("2022-04-01 12:00:00", "Добрый день!"),
+            ("2022-04-01 06:00:00", "Доброе утро!"),
+            ("2022-04-01 18:00:00", "Добрый вечер!"),
+            ("2022-04-01 00:00:00", "Доброй ночи!")
+        ]
+    )
+    def test_get_greeting(self, inp, outp):
         """Проверяет работу функции get_greeting для разных времен."""
-        self.assertEqual(get_greeting("2022-04-01 12:00:00"), "Добрый день!")
-        self.assertEqual(get_greeting("2022-04-01 06:00:00"), "Доброе утро!")
-        self.assertEqual(get_greeting("2022-04-01 18:00:00"), "Добрый вечер!")
-        self.assertEqual(get_greeting("2022-04-01 00:00:00"), "Доброй ночи!")
+        assert get_greeting(inp) == outp
 
     @patch("yfinance.Ticker")
     def test_get_stock_currency(self, mock_ticker: Any) -> None:
