@@ -3,7 +3,7 @@ from typing import Any
 from unittest.mock import Mock, patch
 
 import pandas as pd
-from pytest import mark
+import pytest
 
 from src.views import (
     calculate_total_expenses,
@@ -13,7 +13,20 @@ from src.views import (
     read_transactions_xlsx,
 )
 
+
 # top_transactions
+@pytest.mark.parametrize(
+    "inp, outp",
+    [
+        ("2022-04-01 12:00:00", "Добрый день!"),
+        ("2022-04-01 06:00:00", "Доброе утро!"),
+        ("2022-04-01 18:00:00", "Добрый вечер!"),
+        ("2022-04-01 00:00:00", "Доброй ночи!"),
+    ],
+)
+def test_get_greeting(inp: str, outp: str) -> None:
+    """Проверяет работу функции get_greeting для разных времен."""
+    assert get_greeting(inp) == outp
 
 
 # Заглушки для внешних зависимостей
@@ -46,18 +59,6 @@ class TestFunctions(unittest.TestCase):
         """Настройка перед каждым тестом."""
         pass
 
-    @pytest.mark.parametrize(
-        "inp, outp", [
-            ("2022-04-01 12:00:00", "Добрый день!"),
-            ("2022-04-01 06:00:00", "Доброе утро!"),
-            ("2022-04-01 18:00:00", "Добрый вечер!"),
-            ("2022-04-01 00:00:00", "Доброй ночи!")
-        ]
-    )
-    def test_get_greeting(self, inp, outp):
-        """Проверяет работу функции get_greeting для разных времен."""
-        assert get_greeting(inp) == outp
-
     @patch("yfinance.Ticker")
     def test_get_stock_currency(self, mock_ticker: Any) -> None:
         """Проверяет работу функции get_stock_currency."""
@@ -69,7 +70,14 @@ class TestFunctions(unittest.TestCase):
     def test_calculate_total_expenses(self) -> None:
         """Проверяет работу функции calculate_total_expenses."""
         transactions = [{"transaction_amount": -100}, {"transaction_amount": -200}]
+        transaction = [
+            {"transaction_amount": -100},
+            {"transaction_amount": -200},
+            {"transaction_amount": -700},
+            {"transaction_amount": -50},
+        ]
         self.assertEqual(calculate_total_expenses(transactions), 300.0)
+        self.assertEqual(calculate_total_expenses(transaction), 1050.0)
 
     def test_read_transactions_xlsx(self) -> None:
         """Проверяет работу функции read_transactions_xlsx."""

@@ -18,6 +18,7 @@ from typing import Any
 from unittest.mock import patch
 
 import pandas as pd
+from pytest import fixture
 
 from src.services import get_transactions_by_keyword
 
@@ -68,5 +69,18 @@ def test_other_exceptions(mock_read_excel: Any) -> None:
     assert actual_result == expected_result
 
 
-if __name__ == "main":
+# Заглушка для pandas.read_excel
+@fixture
+def mock_read_excel() -> Any:
+    def mock_read_excel_function(file_path: Any) -> Any:
+        # Загрузка тестовых данных
+        with open("src/operations_data.json", "r", encoding="utf-8") as f:
+            data = json.load(f)
+        df = pd.DataFrame(data)
+        return df
+
+    return mock_read_excel_function
+
+
+if __name__ == "__main__":
     unittest.main()

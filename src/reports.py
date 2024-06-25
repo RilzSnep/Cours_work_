@@ -10,7 +10,7 @@ from src.utils import ligging_setup
 logger = ligging_setup()
 
 
-def read_transactions_xlsx(file_path: str) -> List[Dict]:
+def read_transactions_xlsx(file_path: str) -> Any:
     """
     Чтение финансовых операций из XLSX-файла.
     """

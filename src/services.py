@@ -1,4 +1,5 @@
 import json
+from typing import Dict, List
 
 import pandas as pd
 
@@ -94,6 +95,9 @@ def get_expenses_by_category(transactions: pd.DataFrame, category: str, report_d
 
 
 def main_services() -> None:
+    """
+    Основная функция модуля, которая обьединяет взаимодействие пользователя и функций
+    """
     # Пример использования:
     search_term_1 = "кафе"
     json_result = get_transactions_by_keyword(search_term_1)

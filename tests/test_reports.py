@@ -1,6 +1,20 @@
 import unittest
+from typing import Any
 
-from src.reports import simple_search
+import pandas as pd
+from pytest import fixture
+
+from src.reports import read_transactions_xlsx, simple_search
+
+
+@fixture
+def operations(tmp_path: Any) -> Any:
+    # Создаем временный файл XLSX с данными для теста
+    data = {"date": ["2022-01-01", "2022-01-02"], "description": ["Salary", "Rent"], "amount": [1000, -500]}
+    df = pd.DataFrame(data)
+    file_path = tmp_path / "transactions.xlsx"
+    df.to_excel(file_path, index=False)
+    return file_path
 
 
 class TestMyFunctions(unittest.TestCase):
@@ -31,6 +45,14 @@ class TestMyFunctions(unittest.TestCase):
         # Check if filtered operations contain transactions with the search string
         for transaction in filtered_operations:
             self.assertIn(self.search_string, transaction["description"])
+
+
+def test_read_transactions_xlsx(operations: Any) -> None:
+    # Вызываем функцию и проверяем результат
+    transactions = read_transactions_xlsx(operations)
+    assert len(transactions) == 2
+    assert transactions[0] == {"date": "2022-01-01", "description": "Salary", "amount": 1000}
+    assert transactions[1] == {"date": "2022-01-02", "description": "Rent", "amount": -500}
 
 
 if __name__ == "__main__":
