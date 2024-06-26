@@ -1,9 +1,11 @@
 import json
-from typing import Dict, List
 
 import pandas as pd
 
 from src.utils import ligging_setup
+
+# from typing import Dict, List
+
 
 logger = ligging_setup()
 

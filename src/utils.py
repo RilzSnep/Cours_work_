@@ -1,3 +1,4 @@
+import json
 import logging
 from logging import Logger
 from typing import Any
@@ -27,3 +28,14 @@ def read_transactions_xlsx(file_path: str) -> Any:
     """
     transactions_df = pd.read_excel(file_path)
     return transactions_df.to_dict("records")
+
+
+def write_transactions_json(file_path: str, data: Any) -> None:
+    """Читает"""
+    with open(file_path, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=4, ensure_ascii=False)
+
+
+def read_transactions_json(file_path: str) -> Any:
+    with open(file_path, "r", encoding="utf-8") as f:
+        return json.load(f)

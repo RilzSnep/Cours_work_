@@ -55,5 +55,58 @@ def test_read_transactions_xlsx(operations: Any) -> None:
     assert transactions[1] == {"date": "2022-01-02", "description": "Rent", "amount": -500}
 
 
+class TestSimpleSearch(unittest.TestCase):
+    def setUp(self) -> None:
+        self.transactions = [
+            {"description": "Purchase of a book", "amount": 25.0},
+            {"description": "Grocery shopping", "amount": 100.0},
+            {"description": "Movie ticket purchase", "amount": 15.0},
+        ]
+
+    def test_simple_search_with_matching_string(self) -> None:
+        search_string = "book"
+        expected_result = [
+            {"description": "Purchase of a book", "amount": 25.0},
+        ]
+        result = simple_search(self.transactions, search_string)
+        self.assertEqual(result, expected_result)
+
+    def test_simple_search_with_non_matching_string(self) -> None:
+        search_string = "car"
+        expected_result: list = []
+        result = simple_search(self.transactions, search_string)
+        self.assertEqual(result, expected_result)
+
+
+class TestReadTransactionsXlsx(unittest.TestCase):
+    def setUp(self) -> None:
+        self.mock_data: list = []
+
+    def test_read_transactions_xlsx_with_valid_file(self) -> None:
+        df = pd.DataFrame(self.mock_data)
+        df.to_dict = lambda x: self.mock_data
+
+        file_path = "mock_file.xlsx"
+
+        def mock_read_excel(file_path: Any) -> Any:
+            return df
+
+        read_transactions_xlsx.__globals__["pd.read_excel"] = mock_read_excel
+
+        result = read_transactions_xlsx(file_path)
+        self.assertEqual(result, self.mock_data)
+
+    def test_read_transactions_xlsx_with_invalid_file(self) -> None:
+        file_path = "invalid_file.xlsx"
+
+        def mock_read_excel(file_path: Any) -> Any:
+            raise FileNotFoundError
+
+        read_transactions_xlsx.__globals__["pd.read_excel"] = mock_read_excel
+
+        result = read_transactions_xlsx(file_path)
+        self.assertEqual(result, [])
+
+
 if __name__ == "__main__":
     unittest.main()

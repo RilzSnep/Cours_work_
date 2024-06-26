@@ -7,7 +7,7 @@ import requests
 import yfinance as yf
 from dotenv import load_dotenv
 
-from src.utils import read_transactions_xlsx
+from src.utils import read_transactions_json, read_transactions_xlsx, write_transactions_json
 
 load_dotenv()
 # Получение API ключа из переменных окружения
@@ -97,23 +97,23 @@ def main_views() -> None:
         "Введите дату и время в формате YYYY-MM-DD HH:MM:SS " "или нажмите Enter для использования текущего времени: "
     )
     greeting = get_greeting(user_input if user_input else None)
-    print(greeting)
+    # print(greeting)
 
     transactions = read_transactions_xlsx("../data/operations_mi.xls")
     total_expenses = calculate_total_expenses(transactions)
-    print(f"Total expenses: {total_expenses}")
+    # print(f"Total expenses: {total_expenses}")
 
     card_data = process_card_data(transactions)
-    print(f"Card data: {card_data}")
+    # print(f"Card data: {card_data}")
 
     top_trans = top_transactions(transactions)
-    print(f"Top transactions: {top_trans}")
+    # print(f"Top transactions: {top_trans}")
 
     currency_rates = [
         {"currency": "USD", "rate": get_currency_rate("USD")},
         {"currency": "EUR", "rate": get_currency_rate("EUR")},
     ]
-    print(f"Currency rates: {currency_rates}")
+    # print(f"Currency rates: {currency_rates}")
 
     stock_prices = [
         {"stock": "AAPL", "price": get_stock_currency("AAPL")},
@@ -122,7 +122,7 @@ def main_views() -> None:
         {"stock": "MSFT", "price": get_stock_currency("MSFT")},
         {"stock": "TSLA", "price": get_stock_currency("TSLA")},
     ]
-    print(f"Stock prices: {stock_prices}")
+    # print(f"Stock prices: {stock_prices}")
 
     output_data = {
         "greeting": greeting,
@@ -134,8 +134,8 @@ def main_views() -> None:
     }
 
     output_file = "operations_data.json"
-    with open(output_file, "w", encoding="utf-8") as f:
-        json.dump(output_data, f, indent=4, ensure_ascii=False)
+    write_transactions_json(output_file, output_data)
+    print(read_transactions_json(output_file))
 
 
 if __name__ == "__main__":

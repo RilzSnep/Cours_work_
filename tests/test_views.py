@@ -11,6 +11,7 @@ from src.views import (
     get_stock_currency,
     process_card_data,
     read_transactions_xlsx,
+    top_transactions,
 )
 
 
@@ -97,11 +98,52 @@ class TestFunctions(unittest.TestCase):
         expected_result = [{"last_digits": "3456", "total_spent": 100.0, "cashback": 5.0}]
         self.assertEqual(process_card_data(operations), expected_result)
 
-    """def test_top_transactions(self):
-        Проверяет работу функции top_transactions.
-        transactions = [{'transaction_amount': -100}, {'transaction_amount': -200}]
-        self.assertEqual(top_transactions(transactions),
-                         [{'date': '', 'amount': -200, 'category': '', 'description': ''}])"""
+    def test_top_transactions(self) -> None:
+        """Проверяет работу функции top_transactions."""
+        transactions = [
+            {
+                "date": "2022-01-01",
+                "transaction_amount": -100,
+                "category": "Category A",
+                "description": "Description A",
+            },
+            {
+                "date": "2022-01-02",
+                "transaction_amount": -200,
+                "category": "Category B",
+                "description": "Description B",
+            },
+        ]
+        expected_result = [
+            {
+                "category": "Category A",
+                "date": "2022-01-01",
+                "description": "Description A",
+                "transaction_amount": -100,
+            },
+            {
+                "category": "Category B",
+                "date": "2022-01-02",
+                "description": "Description B",
+                "transaction_amount": -200,
+            },
+        ]
+        self.assertEqual(top_transactions(transactions), expected_result)
+
+
+def test_process_card_data() -> None:
+    operations = [
+        {"card_number": "*1234", "transaction_amount": -100, "bonuses_including_cashback": 50},
+        {"card_number": "*5678", "transaction_amount": -50},
+        {"card_number": "*1234", "transaction_amount": -200},
+        {"card_number": "*9012", "transaction_amount": -75},
+    ]
+    expected_result = [
+        {"cashback": 50.0, "last_digits": "1234", "total_spent": 300.0},
+        {"cashback": 0.0, "last_digits": "5678", "total_spent": 50.0},
+        {"cashback": 0.0, "last_digits": "9012", "total_spent": 75.0},
+    ]
+    assert process_card_data(operations) == expected_result
 
 
 if __name__ == "__main__":
