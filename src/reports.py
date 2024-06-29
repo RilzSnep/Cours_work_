@@ -25,6 +25,11 @@ def read_transactions_xlsx(file_path: str) -> Any:
 
 # Функция для простого поиска
 def simple_search(transactions: Any, search_string: str) -> List[Dict]:
+    """!!ARGS of functions:
+    transactions: pd.DataFrame,
+                         category: str,
+                         date: Optional[str] = None) -> pd.DataFrame:
+    """
     """
     Простой поиск транзакций по описанию.
 
@@ -50,6 +55,7 @@ def main_reports() -> None:
     :return: None
     """
     operations = read_transactions_xlsx("../data/operations_mi.xls")
+    print("Ведите что нужно найти")
     search_string = input()
     filtered_operations = simple_search(operations, search_string)
 
