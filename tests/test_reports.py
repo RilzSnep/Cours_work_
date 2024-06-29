@@ -1,5 +1,5 @@
 import unittest
-from typing import Any
+from typing import Any, List, Dict
 
 import pandas as pd
 from pytest import fixture
@@ -20,7 +20,7 @@ def operations(tmp_path: Any) -> Any:
 class TestMyFunctions(unittest.TestCase):
     def setUp(self) -> None:
         # Set up any data needed for the tests
-        self.operations = [
+        self.operations: List[Dict[str, Any]] = [
             {"description": "Transaction 1"},
             {"description": "Transaction 2"},
             {"description": "Transaction with Магнит"},
@@ -31,14 +31,14 @@ class TestMyFunctions(unittest.TestCase):
 
     def test_search_transactions(self) -> None:
         # Test if read_transactions_xlsx returns a list of dictionaries
-        file_path = "test_file.xlsx"  # Provide a test file path
-        transactions = simple_search(file_path, "")
+        file_path = operations(None)  # Используем функцию operations для получения пути к файлу
+        transactions = read_transactions_xlsx(file_path)
         self.assertIsInstance(transactions, list)
         for transaction in transactions:
             self.assertIsInstance(transaction, dict)
 
     def test_search_other_transactions(self) -> None:
-        # Test if search_transactions filters transactions correctly
+        # Test if simple_search filters transactions correctly
         filtered_operations = simple_search(self.operations, self.search_string)
         self.assertEqual(len(filtered_operations), 2)  # Expecting 2 transactions containing "Магнит"
 
@@ -57,7 +57,7 @@ def test_read_transactions_xlsx(operations: Any) -> None:
 
 class TestSimpleSearch(unittest.TestCase):
     def setUp(self) -> None:
-        self.transactions = [
+        self.transactions: List[Dict[str, Any]] = [
             {"description": "Purchase of a book", "amount": 25.0},
             {"description": "Grocery shopping", "amount": 100.0},
             {"description": "Movie ticket purchase", "amount": 15.0},
@@ -73,14 +73,14 @@ class TestSimpleSearch(unittest.TestCase):
 
     def test_simple_search_with_non_matching_string(self) -> None:
         search_string = "car"
-        expected_result: list = []
+        expected_result: List[Dict[str, Any]] = []
         result = simple_search(self.transactions, search_string)
         self.assertEqual(result, expected_result)
 
 
 class TestReadTransactionsXlsx(unittest.TestCase):
     def setUp(self) -> None:
-        self.mock_data: list = []
+        self.mock_data: List[Dict[str, Any]] = []
 
     def test_read_transactions_xlsx_with_valid_file(self) -> None:
         df = pd.DataFrame(self.mock_data)

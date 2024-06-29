@@ -1,11 +1,10 @@
 import json
+from datetime import datetime
+from typing import Optional
 
 import pandas as pd
 
 from src.utils import ligging_setup
-
-# from typing import Dict, List
-
 
 logger = ligging_setup()
 
@@ -60,7 +59,9 @@ def get_transactions_by_keyword(search_term_2: str) -> str:
         return json.dumps({"error": f"Произошла ошибка: {str(e)}"}, indent=4, ensure_ascii=False)
 
 
-def get_expenses_by_category(transactions: pd.DataFrame, category: str, report_date: pd.Timestamp) -> str:
+def get_expenses_by_category(
+    transactions: pd.DataFrame, category: str, report_date: Optional[str] = None
+) -> str:
     """
     Вычисляет траты по категории за последние 3 месяца от указанной даты.
 
@@ -72,8 +73,11 @@ def get_expenses_by_category(transactions: pd.DataFrame, category: str, report_d
     Returns:
         JSON-строка с результатами расчета.
     """
+    # Если report_date предоставлен, преобразуем его в datetime, иначе используем текущую дату
+    report_date_dt = datetime.strptime(report_date, "%Y-%m-%d") if report_date else datetime.now()
+
     logger.info(
-        f"Расчет трат по категории: {category} за период с" f"{report_date - pd.DateOffset(months=3)} по {report_date}"
+        f"Расчет трат по категории: {category} за период  {report_date_dt - pd.DateOffset(months=3)} - {report_date_dt}"
     )
     # Преобразование столбца 'data_payment' в datetime с правильным форматом
     transactions["data_payment"] = pd.to_datetime(transactions["data_payment"], format="%d.%m.%Y")
@@ -81,14 +85,14 @@ def get_expenses_by_category(transactions: pd.DataFrame, category: str, report_d
     # Извлекаем нужные данные
     filtered_transactions = transactions[
         (transactions["category"] == category)
-        & (transactions["data_payment"] >= report_date - pd.DateOffset(months=3))
-        & (transactions["data_payment"] <= report_date)
+        & (transactions["data_payment"] >= report_date_dt - pd.DateOffset(months=3))
+        & (transactions["data_payment"] <= report_date_dt)
     ]
 
     total_expenses = filtered_transactions["payment_amount"].sum()
 
     result = json.dumps(
-        {"category": category, "total_expenses": total_expenses, "report_date": report_date.strftime("%Y-%m-%d")},
+        {"category": category, "total_expenses": total_expenses, "report_date": str(report_date_dt.date())},
         indent=4,
         ensure_ascii=False,
     )
@@ -108,7 +112,7 @@ def main_services() -> None:
     # Пример использования функции get_expenses_by_category
     transactions_df = pd.read_excel("../data/operations_mi.xls")
     category_to_check = "Еда"
-    report_date_to_check = pd.Timestamp("2024-03-15")
+    report_date_to_check = "2024-03-15"
     json_expenses_result = get_expenses_by_category(transactions_df, category_to_check, report_date_to_check)
     print(json_expenses_result)
 
