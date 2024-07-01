@@ -105,14 +105,17 @@ def main_services() -> None:
     Основная функция модуля, которая обьединяет взаимодействие пользователя и функций
     """
     # Пример использования:
-    search_term_1 = "кафе"
+    print("Ведите слово для поиска например : кафе")
+    search_term_1 = input()
     json_result = get_transactions_by_keyword(search_term_1)
     print(json_result)
 
     # Пример использования функции get_expenses_by_category
     transactions_df = pd.read_excel("../data/operations_mi.xls")
-    category_to_check = "Еда"
-    report_date_to_check = "2024-03-15"
+    print("Ведите слово для поиска например : еда")
+    category_to_check = input()
+    print("Ведите дату для поиска например : 2024-03-15")
+    report_date_to_check = input()
     json_expenses_result = get_expenses_by_category(transactions_df, category_to_check, report_date_to_check)
     print(json_expenses_result)
 

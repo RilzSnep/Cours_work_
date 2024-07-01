@@ -29,7 +29,7 @@ class TestMyFunctions(unittest.TestCase):
         ]
         self.search_string = "Магнит"
 
-    def test_search_transactions(self) -> None:
+    def test_search_transactions(self, operations) -> None:
         # Test if read_transactions_xlsx returns a list of dictionaries
         file_path = operations(None)  # Используем функцию operations для получения пути к файлу
         transactions = read_transactions_xlsx(file_path)
