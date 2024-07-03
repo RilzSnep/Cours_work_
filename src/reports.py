@@ -1,6 +1,6 @@
 import json
 from datetime import datetime, timedelta
-from typing import Any, Dict, List
+from typing import Any
 
 import pandas as pd
 
@@ -38,11 +38,11 @@ def filter_transactions_by_category_and_date(
     """
     end_date = datetime.strptime(start_date, "%d.%m.%Y") + timedelta(days=90)
     filtered_transactions = transactions[
-        (transactions['category'] == category) &
-        (transactions['data_payment'] >= start_date) &
-        (transactions['data_payment'] < end_date.strftime("d.%m.%Y"))
+        (transactions["category"] == category)
+        & (transactions["data_payment"] >= start_date)
+        & (transactions["data_payment"] < end_date.strftime("d.%m.%Y"))
     ]
-    return filtered_transactions.to_dict('records')
+    return filtered_transactions.to_dict("records")
 
 
 def main_reports() -> None:

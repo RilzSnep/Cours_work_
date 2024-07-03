@@ -59,9 +59,7 @@ def get_transactions_by_keyword(search_term_2: str) -> str:
         return json.dumps({"error": f"Произошла ошибка: {str(e)}"}, indent=4, ensure_ascii=False)
 
 
-def get_expenses_by_category(
-    transactions: pd.DataFrame, category: str, report_date: Optional[str] = None
-) -> str:
+def get_expenses_by_category(transactions: pd.DataFrame, category: str, report_date: Optional[str] = None) -> str:
     """
     Вычисляет траты по категории за последние 3 месяца от указанной даты.
 
@@ -77,7 +75,7 @@ def get_expenses_by_category(
     report_date_dt = datetime.strptime(report_date, "%Y-%m-%d") if report_date else datetime.now()
 
     logger.info(
-        f"Расчет трат по категории: {category} за период  {report_date_dt - pd.DateOffset(months=3)} - {report_date_dt}"
+        f"Расчет трат по категории: {category} за период  {report_date_dt - pd.DateOffset(months=3)}--{report_date_dt}"
     )
     # Преобразование столбца 'data_payment' в datetime с правильным форматом
     transactions["data_payment"] = pd.to_datetime(transactions["data_payment"], format="%d.%m.%Y")
