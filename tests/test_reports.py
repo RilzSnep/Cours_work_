@@ -1,5 +1,5 @@
 import unittest
-from typing import Any, List, Dict
+from typing import Any, Dict, List
 
 import pandas as pd
 from pytest import fixture

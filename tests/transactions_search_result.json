@@ -1,5 +1,6 @@
 [
     {
-        "message": "Слово не найдено ни в одной категории"
+        "description": "Lunch",
+        "category": "Cafe"
     }
 ]

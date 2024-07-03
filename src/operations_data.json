@@ -98,11 +98,11 @@
     "currency_rates": [
         {
             "currency": "USD",
-            "rate": 85.656887
+            "rate": 87.254824
         },
         {
             "currency": "EUR",
-            "rate": 91.822746
+            "rate": 93.918336
         }
     ],
     "stock_prices": [
