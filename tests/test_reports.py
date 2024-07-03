@@ -1,10 +1,11 @@
 import unittest
 from io import StringIO
+from unittest.mock import mock_open, patch
+
 import pandas as pd
-from unittest.mock import patch, MagicMock, mock_open
 
 # Импортируем функции, которые мы будем тестировать
-from src.reports import read_transactions_xlsx, filter_transactions_by_category_and_date, main_reports
+from src.reports import main_reports, read_transactions_xlsx
 
 
 class TestReadTransactionsXlsx(unittest.TestCase):

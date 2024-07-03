@@ -24,7 +24,7 @@ def read_transactions_xlsx(file_path: str) -> pd.DataFrame:
 
 def filter_transactions_by_category_and_date(
     transactions: pd.DataFrame, category: str, start_date: str
-) -> List[Dict]:
+) -> list[dict[Any, Any]]:
     """
     Фильтрация транзакций по категории и дате.
 
