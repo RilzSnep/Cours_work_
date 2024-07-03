@@ -1,112 +1,56 @@
 import unittest
-from typing import Any, Dict, List
-
+from io import StringIO
 import pandas as pd
-from pytest import fixture
+from unittest.mock import patch, MagicMock, mock_open
 
-from src.reports import read_transactions_xlsx, simple_search
-
-
-@fixture
-def operations(tmp_path: Any) -> Any:
-    # Создаем временный файл XLSX с данными для теста
-    data = {"date": ["2022-01-01", "2022-01-02"], "description": ["Salary", "Rent"], "amount": [1000, -500]}
-    df = pd.DataFrame(data)
-    file_path = tmp_path / "transactions.xlsx"
-    df.to_excel(file_path, index=False)
-    return file_path
-
-
-class TestMyFunctions(unittest.TestCase):
-    def setUp(self) -> None:
-        # Set up any data needed for the tests
-        self.operations: List[Dict[str, Any]] = [
-            {"description": "Transaction 1"},
-            {"description": "Transaction 2"},
-            {"description": "Transaction with Магнит"},
-            {"description": "Another transaction with Магнит"},
-            {"description": "Transaction without search string"},
-        ]
-        self.search_string = "Магнит"
-
-    def test_search_transactions(self, operations) -> None:
-        # Test if read_transactions_xlsx returns a list of dictionaries
-        file_path = operations(None)  # Используем функцию operations для получения пути к файлу
-        transactions = read_transactions_xlsx(file_path)
-        self.assertIsInstance(transactions, list)
-        for transaction in transactions:
-            self.assertIsInstance(transaction, dict)
-
-    def test_search_other_transactions(self) -> None:
-        # Test if simple_search filters transactions correctly
-        filtered_operations = simple_search(self.operations, self.search_string)
-        self.assertEqual(len(filtered_operations), 2)  # Expecting 2 transactions containing "Магнит"
-
-        # Check if filtered operations contain transactions with the search string
-        for transaction in filtered_operations:
-            self.assertIn(self.search_string, transaction["description"])
-
-
-def test_read_transactions_xlsx(operations: Any) -> None:
-    # Вызываем функцию и проверяем результат
-    transactions = read_transactions_xlsx(operations)
-    assert len(transactions) == 2
-    assert transactions[0] == {"date": "2022-01-01", "description": "Salary", "amount": 1000}
-    assert transactions[1] == {"date": "2022-01-02", "description": "Rent", "amount": -500}
-
-
-class TestSimpleSearch(unittest.TestCase):
-    def setUp(self) -> None:
-        self.transactions: List[Dict[str, Any]] = [
-            {"description": "Purchase of a book", "amount": 25.0},
-            {"description": "Grocery shopping", "amount": 100.0},
-            {"description": "Movie ticket purchase", "amount": 15.0},
-        ]
-
-    def test_simple_search_with_matching_string(self) -> None:
-        search_string = "book"
-        expected_result = [
-            {"description": "Purchase of a book", "amount": 25.0},
-        ]
-        result = simple_search(self.transactions, search_string)
-        self.assertEqual(result, expected_result)
-
-    def test_simple_search_with_non_matching_string(self) -> None:
-        search_string = "car"
-        expected_result: List[Dict[str, Any]] = []
-        result = simple_search(self.transactions, search_string)
-        self.assertEqual(result, expected_result)
+# Импортируем функции, которые мы будем тестировать
+from src.reports import read_transactions_xlsx, filter_transactions_by_category_and_date, main_reports
 
 
 class TestReadTransactionsXlsx(unittest.TestCase):
-    def setUp(self) -> None:
-        self.mock_data: List[Dict[str, Any]] = []
+    @patch('pandas.read_excel')
+    def test_read_transactions_xlsx_success(self, mock_read_excel):
+        # Создаем мок DataFrame
+        mock_df = pd.DataFrame({
+            'category': ['Food', 'Utilities'],
+            'data_payment': ['01.01.2020', '02.01.2020'],
+            'amount': [100, 200]
+        })
+        mock_read_excel.return_value = mock_df
 
-    def test_read_transactions_xlsx_with_valid_file(self) -> None:
-        df = pd.DataFrame(self.mock_data)
-        df.to_dict = lambda x: self.mock_data
+        # Вызываем функцию
+        result = read_transactions_xlsx('dummy_path.xlsx')
 
-        file_path = "mock_file.xlsx"
+        # Проверяем результат
+        pd.testing.assert_frame_equal(result, mock_df)
 
-        def mock_read_excel(file_path: Any) -> Any:
-            return df
+    @patch('pandas.read_excel', side_effect=FileNotFoundError)
+    def test_read_transactions_xlsx_failure(self, mock_read_excel):
+        # Вызываем функцию
+        result = read_transactions_xlsx('nonexistent_path.xlsx')
 
-        read_transactions_xlsx.__globals__["pd.read_excel"] = mock_read_excel
-
-        result = read_transactions_xlsx(file_path)
-        self.assertEqual(result, self.mock_data)
-
-    def test_read_transactions_xlsx_with_invalid_file(self) -> None:
-        file_path = "invalid_file.xlsx"
-
-        def mock_read_excel(file_path: Any) -> Any:
-            raise FileNotFoundError
-
-        read_transactions_xlsx.__globals__["pd.read_excel"] = mock_read_excel
-
-        result = read_transactions_xlsx(file_path)
-        self.assertEqual(result, [])
+        # Проверяем, что результат - пустой DataFrame
+        self.assertTrue(result.empty)
 
 
-if __name__ == "__main__":
+class TestMainReports(unittest.TestCase):
+    @patch('builtins.open', new_callable=mock_open)
+    @patch('src.reports.filter_transactions_by_category_and_date')
+    @patch('src.reports.read_transactions_xlsx')
+    @patch('sys.stdin', StringIO('Food\n01.01.2020\n'))
+    def test_main_reports(self, mock_read_transactions_xlsx, mock_filter_transactions_by_category_and_date, mock_open):
+        # Настраиваем моки
+        mock_df = pd.DataFrame()
+        mock_read_transactions_xlsx.return_value = mock_df
+        mock_filter_transactions_by_category_and_date.return_value = []
+
+        # Вызываем функцию
+        main_reports()
+
+        # Проверяем, что функции были вызваны с правильными аргументами
+        mock_read_transactions_xlsx.assert_called_once_with('../data/operations_mi.xls')
+        mock_filter_transactions_by_category_and_date.assert_called_once_with(mock_df, 'Food', '01.01.2020')
+
+
+if __name__ == '__main__':
     unittest.main()
