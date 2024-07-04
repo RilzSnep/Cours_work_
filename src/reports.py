@@ -4,7 +4,6 @@ from typing import Any
 
 import pandas as pd
 
-
 from src.utils import ligging_setup
 
 logger = ligging_setup()
@@ -22,9 +21,7 @@ def read_transactions_xlsx(file_path: str) -> pd.DataFrame:
         return pd.DataFrame()  # Возвращаем пустой DataFrame в случае ошибки
 
 
-def filter_transactions_by_category_and_date(
-    transactions: pd.DataFrame, category: str, start_date: str
-) -> list[dict[Any, Any]]:
+def filter_transactions_by_category_and_date(transactions: pd.DataFrame, category: str, start_date: str) -> Any:
     """
     Фильтрация транзакций по категории и дате.
 
@@ -38,11 +35,11 @@ def filter_transactions_by_category_and_date(
     """
     end_date = datetime.strptime(start_date, "%d.%m.%Y") + timedelta(days=90)
     filtered_transactions = transactions[
-        (transactions['category'] == category) &
-        (transactions['data_payment'] >= start_date) &
-        (transactions['data_payment'] < end_date.strftime("d.%m.%Y"))
+        (transactions["category"] == category)
+        & (transactions["data_payment"] >= start_date)
+        & (transactions["data_payment"] < end_date.strftime("d.%m.%Y"))
     ]
-    return filtered_transactions.to_dict('records')
+    return filtered_transactions.to_dict("records")
 
 
 def main_reports() -> None:

@@ -1,2 +1,0 @@
-2024-07-04 18:12:54,458 - INFO - reports.py:17 - Чтение данных из файла ../data/operations_mi.xls
-2024-07-04 18:13:17,831 - INFO - reports.py:61 - Отфильтрованные операции записаны в файл filtered_operations.json
