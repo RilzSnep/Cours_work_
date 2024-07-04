@@ -4,7 +4,7 @@ from typing import Any
 
 import pandas as pd
 
-# Предположим, что функция ligging_setup уже определена в модуле src.utils
+
 from src.utils import ligging_setup
 
 logger = ligging_setup()
