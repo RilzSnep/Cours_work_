@@ -1,122 +1,59 @@
 import json
-from datetime import datetime
-from typing import Optional
-
+import logging
+from typing import Any
 import pandas as pd
 
-from src.utils import ligging_setup
+# Настройка логгера
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-logger = ligging_setup()
 
-
-def get_transactions_by_keyword(search_term_2: str) -> str:
-    """Возвращает JSON-ответ со всеми транзакциями, содержащими search_term
-    в описании или категории.
-
-    Args:
-        search_term_2: Строка для поиска.
-
-    Returns:
-        JSON-строка с результатами поиска.
+def read_transactions_xlsx_file(file_path: str) -> list:
     """
-    logger.info(f"Поиск транзакций по ключевому слову: {search_term_2}")
+    Чтение транзакций из файла XLSX и возврат данных в формате списка словарей.
+    """
     try:
-        file_path = "../data/operations_mi.xls"
-        data = pd.read_excel(file_path)
-
-        # Преобразование столбца 'description' и 'category' в строки
-        data["description"] = data["description"].astype(str)
-        data["category"] = data["category"].astype(str)
-
-        # Фильтруем данные
-        filtered_data = data[
-            data["description"].str.contains(search_term_2, case=False)
-            | data["category"].str.contains(search_term_2, case=False)
-        ]
-
-        # Преобразуем DataFrame в список словарей
-        transaction_list = filtered_data.to_dict(orient="records")
-
-        # Проверяем, пустой ли список
-        if not transaction_list:
-            transaction_list = [{"message": "Слово не найдено ни в одной категории"}]
-
-        # Преобразуем список словарей в JSON-строку
-        json_response = json.dumps(transaction_list, indent=4, ensure_ascii=False)
-
-        # Записываем в файл
-        with open("transactions_search_result.json", "w", encoding="utf-8") as f:
-            json.dump(transaction_list, f, indent=4, ensure_ascii=False)
-
-        logger.info("Результаты поиска записаны в файл transactions_search_result.json")
-        return json_response
-
+        df = pd.read_excel(file_path)
+        return df.to_dict(orient="records")
+    except pd.errors.EmptyDataError:
+        logger.error(f"Файл {file_path} пустой или не содержит данных")
+        return []
     except FileNotFoundError:
-        logger.error("Файл operations.xls не найден.")
-        return json.dumps({"error": "Файл operations.xls не найден."}, indent=4, ensure_ascii=False)
+        logger.error(f"Файл {file_path} не найден")
+        return []
     except Exception as e:
-        logger.error(f"Произошла ошибка: {str(e)}")
-        return json.dumps({"error": f"Произошла ошибка: {str(e)}"}, indent=4, ensure_ascii=False)
+        logger.error(f"Ошибка при чтении файла {file_path}: {e}")
+        return []
 
 
-def get_expenses_by_category(transactions: pd.DataFrame, category: str, report_date: Optional[str] = None) -> str:
+def simple_search(user_request: str, file_path: str, output_file: str) -> None:
     """
-    Вычисляет траты по категории за последние 3 месяца от указанной даты.
-
-    Args:
-        transactions: DataFrame с транзакциями.
-        category: Категория для расчета.
-        report_date: Дата, от которой отсчитывать 3 месяца.
-
-    Returns:
-        JSON-строка с результатами расчета.
+    Функция выполняет простой поиск по данным транзакций и записывает результат в файл JSON.
     """
-    # Если report_date предоставлен, преобразуем его в datetime, иначе используем текущую дату
-    report_date_dt = datetime.strptime(report_date, "%Y-%m-%d") if report_date else datetime.now()
+    logger.info("start simple_search")
+    python_data = read_transactions_xlsx_file(file_path)
+    data = []
+    for transaction in python_data:
+        # Поиск по описанию и категории (учитывая регистр)
+        if (user_request.lower() in str(transaction.get("Описание", "")).lower()) or (
+            user_request.lower() in str(transaction.get("Категория", "")).lower()
+        ):
+            data.append(transaction)
 
-    logger.info(
-        f"Расчет трат по категории: {category} за период  {report_date_dt - pd.DateOffset(months=3)}--{report_date_dt}"
-    )
-    # Преобразование столбца 'data_payment' в datetime с правильным форматом
-    transactions["data_payment"] = pd.to_datetime(transactions["data_payment"], format="%d.%m.%Y")
+        # Обработка пустых значений (NaN) в данных
+        for key, value in transaction.items():
+            if pd.isna(value):
+                transaction[key] = None
 
-    # Извлекаем нужные данные
-    filtered_transactions = transactions[
-        (transactions["category"] == category)
-        & (transactions["data_payment"] >= report_date_dt - pd.DateOffset(months=3))
-        & (transactions["data_payment"] <= report_date_dt)
-    ]
-
-    total_expenses = filtered_transactions["payment_amount"].sum()
-
-    result = json.dumps(
-        {"category": category, "total_expenses": total_expenses, "report_date": str(report_date_dt.date())},
-        indent=4,
-        ensure_ascii=False,
-    )
-    logger.info(f"Результаты расчета: {result}")
-    return result
-
-
-def main_services() -> None:
-    """
-    Основная функция модуля, которая обьединяет взаимодействие пользователя и функций
-    """
-    # Пример использования:
-    print("Ведите слово для поиска например : кафе")
-    search_term_1 = input()
-    json_result = get_transactions_by_keyword(search_term_1)
-    print(json_result)
-
-    # Пример использования функции get_expenses_by_category
-    transactions_df = pd.read_excel("../data/operations_mi.xls")
-    print("Ведите слово для поиска например : еда")
-    category_to_check = input()
-    print("Ведите дату для поиска например : 2024-03-15")
-    report_date_to_check = input()
-    json_expenses_result = get_expenses_by_category(transactions_df, category_to_check, report_date_to_check)
-    print(json_expenses_result)
+    # Запись результатов поиска в файл JSON
+    with open(output_file, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=4)
+    logger.info(f"Результаты поиска сохранены в файл: {output_file}")
 
 
 if __name__ == "__main__":
-    main_services()
+    file_path = "../data/operations.xls"  # Путь к вашему файлу с данными
+    user_request = input("Введите запрос для поиска: ")
+    output_file = "search_results.json"  # Путь к файлу, куда будут сохранены результаты поиска
+    simple_search(user_request, file_path, output_file)
+    print(f"Результаты поиска сохранены в файл: {output_file}")

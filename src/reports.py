@@ -1,12 +1,11 @@
 import json
+import logging
 from datetime import datetime, timedelta
 from typing import Any
 
 import pandas as pd
 
-from src.utils import ligging_setup
-
-logger = ligging_setup()
+logger = logging.getLogger(__name__)
 
 
 def read_transactions_xlsx(file_path: str) -> pd.DataFrame:
@@ -46,17 +45,17 @@ def main_reports() -> None:
     """
     Главная функция модуля.
     """
-    operations = read_transactions_xlsx("../data/operations_mi.xls")
-    category = input("Введите категорию трат: ")
-    start_date = input("Введите дату начала 3-месячного периода (MM.DD.YYYY): ")
+    operations = read_transactions_xlsx("../data/operations.xls")
+    category = input("Введите категорию трат (первая буква - заглавная): ")
+    start_date = input("Введите дату начала периода длинной в 3 месяца(DD.MM.YYYY): ")
 
     filtered_operations = filter_transactions_by_category_and_date(operations, category, start_date)
 
-    with open("filtered_operations.json", "w", encoding="utf-8") as f:
+    with open("filter.json", "w", encoding="utf-8") as f:
         json.dump(filtered_operations, f, indent=4, ensure_ascii=False)
 
-    logger.info("Отфильтрованные операции записаны в файл filtered_operations.json")
-    print("Отфильтрованные операции записаны в файл filtered_operations.json")
+    logger.info("Отфильтрованные операции записаны в файл filter.json")
+    print("Отфильтрованные операции записаны в файл filter.json")
 
 
 if __name__ == "__main__":
